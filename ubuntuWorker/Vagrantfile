@@ -1,0 +1,38 @@
+IMAGE_NAME = "ubuntu/bionic64"
+MASTER_NAME = "master"
+WORKER_NBR = 1
+NODE_NETWORK_BASE = "192.168.56"
+ 
+ 
+ 
+Vagrant.configure("2") do |config|
+ 
+ 
+  
+# Master node config
+ 
+  config.vm.define MASTER_NAME do | master |
+    master.vm.box = IMAGE_NAME
+    master.vm.network "private_network", ip: "#{NODE_NETWORK_BASE}.100"
+    master.vm.network "public_network"
+    master.vm.hostname = MASTER_NAME
+ 
+  end
+ 
+ # worker node
+  
+  (1..WORKER_NBR).each do |i|
+     config.vm.define "worker-#{i}" do |worker|
+ 
+        worker.vm.box = IMAGE_NAME
+        worker.vm.network "private_network", ip: "#{NODE_NETWORK_BASE}.#{i + 10}"
+        worker.vm.network "public_network"
+        worker.vm.hostname = "worker-#{i}"
+ 
+      end
+   end
+ 
+   config.vm.provider "virtualbox" do |vb|
+     vb.memory = "1024"
+   end
+end
